@@ -1,0 +1,30 @@
+добавить файл
+git add <file|mask>
+
+посмотреть статус/изменения
+git status
+
+закоммитить локальные изменения в локальную репу
+git commit
+авто коммит изменненных файлов
+git commit -a
+
+получить последние обновления с сервера
+git fetch origin
+
+слить узменения текущей метки и удаленной
+git merge
+
+отправить в удаленный репозитарий (потребуется логин/пароль)
+git push origin master
+
+список удаленных реп
+git remote
+
+добавить удаленныую репу
+git remote add <nick of rep> https://github.com/KRAndroidDevelopment/LizaAlert.git
+git remote add origin https://github.com/KRAndroidDevelopment/LizaAlert.git
+
+
+
+git clone git://github.com/KRAndroidDevelopment/LizaAlert.git
