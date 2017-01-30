@@ -1,3 +1,9 @@
+инициализация для нового репозитания
+git init
+
+инициализация для существующего проекта (получение всех файлов) создаст их в папке LizaAlert
+git clone git://github.com/KRAndroidDevelopment/LizaAlert.git
+
 добавить файл
 git add <file|mask>
 
@@ -21,10 +27,11 @@ git push origin master
 список удаленных реп
 git remote
 
+отмена изменений для файла и возврат его к прежнему состянию
+git checkout -- benchmarks.rb
+
 добавить удаленныую репу
 git remote add <nick of rep> https://github.com/KRAndroidDevelopment/LizaAlert.git
 git remote add origin https://github.com/KRAndroidDevelopment/LizaAlert.git
 
 
-
-git clone git://github.com/KRAndroidDevelopment/LizaAlert.git
