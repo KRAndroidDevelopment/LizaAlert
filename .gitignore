@@ -1,3 +1,4 @@
 gen/*
 bin/*
 .auto_commit.rb
+parser/config.php

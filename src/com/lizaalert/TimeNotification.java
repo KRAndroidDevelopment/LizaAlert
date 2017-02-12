@@ -7,11 +7,18 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
+import android.util.Log;
 
 public class TimeNotification extends BroadcastReceiver {
+	final static String TAG = "myLogs";
+	private static final int PERIOD=30000;
+//	private static final int PERIOD=5000;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
+    	Log.d(TAG, "TimeNotification::onReceive");
+    	/*
 		NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification notification = (Notification) new Notification(R.drawable.ic_launcher, "ѕропал человек", System.currentTimeMillis());
 		//»нтент дл€ активити, которую мы хотим запускать при нажатии на уведомление
@@ -25,6 +32,25 @@ public class TimeNotification extends BroadcastReceiver {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
 		intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_DAY, pendingIntent);
+		*/
+    	scheduleAlarms(context, 0);
 	}
 
+	static void scheduleAlarms(Context context, long period) {
+		Log.d(TAG, "TimeNotification::scheduleAlarms");
+		/*
+		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent i = new Intent(context, ScheduledService.class);
+		PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
+		mgr.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + PERIOD, PERIOD, pi);
+		*/
+		
+		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent i = new Intent(context, ScheduledService.class);
+		PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
+		mgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + period, pi);
+		
+		//context.startService(new Intent(context, ScheduledService.class));
+	}
+	 
 }

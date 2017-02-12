@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lizaalert"
-    android:versionCode="1"
     android:installLocation="internalOnly"
+    android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="23" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.QUICKBOOT_POWERON" />
 
@@ -37,17 +37,40 @@
                 android:value="com.lizaalert.MainActivity" />
         </activity>
 
+        <receiver android:name=".BootCompletedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".MyService"
             android:enabled="true"
             android:exported="false" >
         </service>
-        <receiver android:name=".BootCompletedReceiver">  
+        <!--
+		<service 
+			android:name="ScheduledService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+                
+ 		<service 
+ 			android:name=".SimpleWakefulService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+
+        <receiver android:name=".SimpleWakefulReceiver">  
             <intent-filter>  
                 <action android:name="android.intent.action.BOOT_COMPLETED" />  
             </intent-filter>  
-        </receiver>        
-
+        </receiver>        
+        -->
+        <activity
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test" >
+        </activity>
     </application>
 
 </manifest>
