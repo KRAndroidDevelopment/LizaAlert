@@ -55,7 +55,7 @@ public class MyService extends Service {
 	    	
 	    	protected long check_updates(){
 	    		try {
-	    	        URL url = new URL("http://narod-fl.ru/check_update.php");
+	    	        URL url = new URL("http://narod-fl.ru/lost_humans/check_update.php");
 	    	        //URL url = new URL("http://narod-fl.ru/lost_humans.xml");
 	    	        URLConnection conn = url.openConnection();
 	    	        BufferedReader reader = new BufferedReader(

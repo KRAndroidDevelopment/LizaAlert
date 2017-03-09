@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
 	}
 
 	String load_xml(){
-		return load_url("http://narod-fl.ru/lost_humans.xml");
+		return load_url("http://narod-fl.ru/lost_humans/lost_humans.php");
 	}
 
 	public static final String md5(final String s) {
