@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -24,19 +25,28 @@ public class MyService extends Service {
 		new Thread(new Runnable() {
 	    	@Override
 	    	public void run() {
-	    		long last_ts = 0;
+	    		long prev_last_id = 0;
 	    		int n = 0;
+	    		SharedPreferences mySharedPreferences = getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
+    			if(mySharedPreferences.contains(MainActivity.APP_PREFERENCES_LAST_ID)) {
+    				prev_last_id = mySharedPreferences.getLong(MainActivity.APP_PREFERENCES_LAST_ID, 0);
+    			}		
+	    		
 	    		while(true){
 	    			if(delay()) break;
 	    			if(activity_active){
 	    				n = 0;
+	        			if(mySharedPreferences.contains(MainActivity.APP_PREFERENCES_LAST_ID)) {
+	        				prev_last_id = mySharedPreferences.getLong(MainActivity.APP_PREFERENCES_LAST_ID, 0);
+	        			}		
 	    				continue;
 	    			}
-	            	long last_change = check_updates();
-	            	if(last_change == 0 || last_ts == last_change){
+
+	            	long last_id = check_updates();
+	            	if(last_id == 0 || prev_last_id == last_id){
 	            		continue;
 	            	}
-	            	last_ts = last_change;
+	            	prev_last_id = last_id;
 	            	n++;
 	            	Log.d(TAG, "MyService::Thread::run::UPDATE!!!");
 	            	lostHumanNotify(n);

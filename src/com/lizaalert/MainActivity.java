@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -22,6 +23,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -34,7 +37,12 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	final static String TAG = "myLogs";
-	Intent intent;
+	// это будет именем файла настроек
+	public static final String APP_PREFERENCES = "mysettings"; 	Intent intent;
+	public static final String APP_PREFERENCES_LAST_ID = "last_id";
+	
+	public SharedPreferences mySharedPreferences;
+	
 	ServiceConnection sConn;
 	boolean bound;
 	
@@ -112,6 +120,15 @@ public class MainActivity extends Activity {
 	
 	void parse_xml(){
     	XmlPullParser parser = getResources().getXml(R.xml.lost_humans);
+    	/*
+// из файла на SD-карты
+XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+//factory.setNamespaceAware(true); // если используется пространство имён
+XmlPullParser parser = factory.newPullParser();
+File file = new File(Environment.getExternalStorageDirectory()+ "/sd-contacts.xml");
+FileInputStream fis = new FileInputStream(file);
+parser.setInput(new InputStreamReader(fis));    	 
+    	 */
     	
     	// продолжаем, пока не достигнем конца документа
     	try {
@@ -171,7 +188,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
     	Log.d(TAG, "MainActivity::onCreate");
-		parse_xml();
+		//parse_xml();
 		super.onCreate(savedInstanceState);
 //		ImageView iv = new ImageView();
 		
@@ -183,7 +200,6 @@ public class MainActivity extends Activity {
 //		SimpleWakefulReceiver.scheduleAlarms(this, 0);	//Start service
 		//Toast.makeText(this, "" + Build.VERSION.SDK_INT, Toast.LENGTH_SHORT).show();
     	Log.d(TAG, "Build.VERSION.SDK_INT=" + Build.VERSION.SDK_INT);
-    	//SharedPreferences.
     	intent = new Intent("com.LizaAlert.MyService");
 		sConn = new ServiceConnection() {
 			public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -195,7 +211,20 @@ public class MainActivity extends Activity {
 				Log.d(TAG, "MainActivity onServiceDisconnected");
 				bound = false;
 			}
-		};    	
+		};
+		
+		mySharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+		//Save settings
+		//Editor editor = mySharedPreferences.edit();
+		//editor.putInt(key, value)
+		//editor.putString(APP_PREFERENCES_LAST_ID, strNickName);
+		//editor.apply();
+
+		//Load settings
+		//if(mySharedPreferences.contains(APP_PREFERENCES_LAST_ID)) {
+		//	mySharedPreferences.getString(APP_PREFERENCES_LAST_ID, "");
+		//}		
+		
 	}
 
     @Override
@@ -261,6 +290,13 @@ public class MainActivity extends Activity {
 	public void refresh(View v) {
 	    //Intent intent = new Intent(this, AboutActivity.class);
 	    //startActivity(intent);
+		
+		
+		//ImageView bmImage;
+		//Bitmap result;
+		//InputStream in = new java.net.URL(url).openStream()
+		//result = BitmapFactory.decodeStream(in);
+		//bmImage.setImageBitmap(result);
 	}	
 	
 }

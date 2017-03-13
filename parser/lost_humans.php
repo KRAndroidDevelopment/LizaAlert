@@ -22,6 +22,7 @@ if($time - $mtime > 60 * 5){
 <root>
 <last_update>$mtime</last_update>
 <entry>
+<id>{$r->by_name('id')}</id>
 <src_url>{$r->by_name('src_url')}</src_url>
 <photo_url>{$r->by_name('photo_url')}</photo_url>
 <date>{$r->by_name('date')}</date>
