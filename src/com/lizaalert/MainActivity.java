@@ -2,79 +2,130 @@ package com.lizaalert;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ViewFlipper;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnTouchListener {
 	final static String TAG = "myLogs";
 	// это будет именем файла настроек
 	public static final String APP_PREFERENCES = "mysettings"; 	Intent intent;
 	public static final String APP_PREFERENCES_LAST_ID = "last_id";
-	
+
 	public SharedPreferences mySharedPreferences;
 	
 	ServiceConnection sConn;
 	boolean bound;
-	
-	String load_url(String url){
-		try {
-	        URL u = new URL(url);
-	        URLConnection conn = u.openConnection();
-	        BufferedReader reader = new BufferedReader(
-	                new InputStreamReader(conn.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-	        char [] buf = new char[128];
-	        while(true){
-	        	int c = reader.read(buf);
-	        	if(c <= 0){ 
-        			break;
-        		}
-	        	sb.append(buf, 0, c);
-	        }
-	        reader.close();
-			//Log.d("myLogs", sb.toString());
-			return sb.toString();
-		} catch (Exception e) {
-			Log.e("myLogs", "Exception::load_url::" + e.toString());
-	    	Log.d(TAG, e.getStackTrace().toString());
-		}
-		return null;
-	}
 
+    private static final float MOVE_LENGTH =150;
+	private ViewFlipper flipper = null;
+    private float fromPosition;
+	boolean flag_slide = true;
+	int flipper_index = 0;
+	public List<LostHumanItem> lost_humans = new ArrayList<LostHumanItem>();
+	
+    public boolean onTouch(View view, MotionEvent event){
+    	//EditText et;
+    	//et.setAutoLinkMask(android.text.util.Linkify.ALL);
+    	//et.setText(url);
+        switch (event.getAction()){
+/*        
+        case MotionEvent.ACTION_DOWN:
+            fromPosition = event.getX();
+            break;
+        case MotionEvent.ACTION_UP:
+            float toPosition = event.getX();
+            if (fromPosition > toPosition){
+                flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_next_in));
+                flipper.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.go_next_out));
+                flipper.showNext();
+            }else if (fromPosition < toPosition){
+                flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_in));
+                flipper.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_out));
+                flipper.showPrevious();
+            }
+*/            
+        case MotionEvent.ACTION_DOWN:
+            fromPosition = event.getX();
+            break;
+    	// Вместо ACTION_UP
+	    case MotionEvent.ACTION_MOVE:
+	    	if(!flag_slide){
+	    		break;
+	    	}
+	        float toPosition = event.getX();
+	        // MOVE_LENGTH - расстояние по оси X, после которого можно переходить на след. экран
+	        // В моем тестовом примере MOVE_LENGTH = 150
+	        if ((fromPosition - MOVE_LENGTH) > toPosition){
+	    		flag_slide = false;
+	//        	fromPosition = toPosition;
+	            flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_next_in));
+	            flipper.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.go_next_out));
+	            flipper.showNext();
+	            flipper_index++;
+	        }else if ((fromPosition + MOVE_LENGTH) < toPosition){
+	    		flag_slide = false;
+	//        	fromPosition = toPosition;
+	            flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_in));
+	            flipper.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_out));
+	            flipper.showPrevious();
+	            if(flipper_index > 0){
+	            	flipper_index--;
+	            }
+	        }  
+	        break;
+    	case MotionEvent.ACTION_UP:
+    		flag_slide = true;
+	        break;
+        default:
+            break;
+        }
+        return true;
+    }
+	
+	
+/*
 	String load_xml(){
 		return load_url("http://narod-fl.ru/lost_humans/lost_humans.php");
 	}
-
+*/
 	public static final String md5(final String s) {
 	    try {
 	        // Create MD5 Hash
@@ -99,92 +150,6 @@ public class MainActivity extends Activity {
 	    return "";
 	}	
 	
-	String cache_photo(String photo_url){
-		String md5 = md5(photo_url) + ".jpg";
-    	Log.d(TAG, md5);
-		File sdCardFile = new File(this.getExternalCacheDir(), md5);
-		if(!sdCardFile.exists()){
-			String img = load_url(photo_url);
-			try {
-				FileWriter fWriter = new FileWriter(sdCardFile, true);
-				fWriter.write(img);
-				fWriter.close();
-			} catch (Exception e) {
-		    	Log.d(TAG, "Exception::cache_photo::" + e.toString());
-		    	Log.d(TAG, e.getStackTrace().toString());
-			}
-		}
-		return md5;
-	}
-		
-	
-	void parse_xml(){
-    	XmlPullParser parser = getResources().getXml(R.xml.lost_humans);
-    	/*
-// из файла на SD-карты
-XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-//factory.setNamespaceAware(true); // если используется пространство имён
-XmlPullParser parser = factory.newPullParser();
-File file = new File(Environment.getExternalStorageDirectory()+ "/sd-contacts.xml");
-FileInputStream fis = new FileInputStream(file);
-parser.setInput(new InputStreamReader(fis));    	 
-    	 */
-    	
-    	// продолжаем, пока не достигнем конца документа
-    	try {
-			int event;
-			Entry e = new Entry();
-			while ((event = parser.getEventType()) != XmlPullParser.END_DOCUMENT) {
-				String tag = "";
-				switch(event){
-					case XmlPullParser.START_TAG:
-						tag = parser.getName();
-						if(tag.equals("entry")){
-							e = new Entry();
-						}
-						break;
-					case XmlPullParser.END_TAG:
-						tag = parser.getName();
-						if(tag.equals("entry")){
-							
-						}
-						break;
-					case XmlPullParser.TEXT:
-						String text = parser.getText();
-						switch(tag){
-							case "date":
-								e.date = text;
-								break;
-							case "photo_url":
-								e.photo_url = text;
-								cache_photo(e.photo_url);								
-								break;
-							case "src_url":
-								e.src_url = text;
-								break;
-							case "description":
-								e.description = text;
-								break;
-						}
-						break;
-				}
-			    parser.next();
-/*    		
-			    if (parser.getEventType() == XmlPullParser.START_TAG
-			            && parser.getName().equals("contact")) {
-			        list.add(parser.getAttributeValue(0) + " "
-			                + parser.getAttributeValue(1) + "\n"
-			                + parser.getAttributeValue(2));
-			    }
-*/    	    
-			}
-		} catch (Exception e) {
-	    	Log.d(TAG, "Exception::parse_xml::" + e.toString());
-	    	Log.d(TAG, e.getStackTrace().toString());
-		}    	
-		
-	}
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
     	Log.d(TAG, "MainActivity::onCreate");
@@ -193,6 +158,15 @@ parser.setInput(new InputStreamReader(fis));
 //		ImageView iv = new ImageView();
 		
 		setContentView(R.layout.activity_main);
+		
+        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.main_layout);
+        mainLayout.setOnTouchListener(this);
+        
+        flipper = (ViewFlipper) findViewById(R.id.flipper);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        flipper.addView(inflater.inflate(R.layout.first, null));
+		
 //		startService(new Intent(this, SimpleWakefulService.class));
 		startService(new Intent(this, MyService.class));
 //		lostHumanNotify();
@@ -223,8 +197,7 @@ parser.setInput(new InputStreamReader(fis));
 		//Load settings
 		//if(mySharedPreferences.contains(APP_PREFERENCES_LAST_ID)) {
 		//	mySharedPreferences.getString(APP_PREFERENCES_LAST_ID, "");
-		//}		
-		
+		//}	
 	}
 
     @Override
@@ -286,8 +259,12 @@ parser.setInput(new InputStreamReader(fis));
 		// Устанавливаем разовое напоминание
 		am.set(AlarmManager.RTC_WAKEUP, 0, pendingIntent);
 	}
-	
+
 	public void refresh(View v) {
+		Log.d(TAG, "refresh");
+		new XML_Downloader(this).execute();
+		Log.d(TAG, "/refresh");
+/*		
 	    //Intent intent = new Intent(this, AboutActivity.class);
 	    //startActivity(intent);
 		
@@ -297,6 +274,19 @@ parser.setInput(new InputStreamReader(fis));
 		//InputStream in = new java.net.URL(url).openStream()
 		//result = BitmapFactory.decodeStream(in);
 		//bmImage.setImageBitmap(result);
+		XmlPullParser parser = LoadXML();
+		if(parser == null){
+			Log.d(TAG, "parser == null");
+			return;
+		}
+		parse_xml(parser);
+		flipper_index = 0;
+		LostHumanItem i = lost_humans.get(0);
+		Bitmap result = BitmapFactory.decodeFile(i.photo_file);
+		ImageView iv = (ImageView) findViewById(R.id.imageView1);
+		iv.setImageBitmap(result);
+		Log.d(TAG, "/refresh");
+*/		
 	}	
 	
 }

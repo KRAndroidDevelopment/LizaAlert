@@ -19,16 +19,7 @@ if($time - $mtime > 60 * 5){
 	$xml = '<'.'?xml version="1.0" encoding="utf-8"?'.'>';
 	$mtime = date('d.m.Y H:i:s', $time);
 	$xml .= <<<EOS
-<root>
-<last_update>$mtime</last_update>
-<entry>
-<id>{$r->by_name('id')}</id>
-<src_url>{$r->by_name('src_url')}</src_url>
-<photo_url>{$r->by_name('photo_url')}</photo_url>
-<date>{$r->by_name('date')}</date>
-<description>{$r->by_name('description')}</description>
-</entry>
-</root>
+<root><last_update>$mtime</last_update><entry><id>{$r->by_name('id')}</id><src_url>{$r->by_name('src_url')}</src_url><photo_url>{$r->by_name('photo_url')}</photo_url><date>{$r->by_name('date')}</date><description>{$r->by_name('description')}</description></entry></root>
 EOS;
 	file_put_contents($cache_file, $xml);
 }
