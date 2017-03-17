@@ -27,11 +27,11 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class XML_Downloader extends AsyncTask<Void, Void, XmlPullParser> {
+public class Downloader extends AsyncTask<Void, Void, XmlPullParser> {
 	MainActivity obj;
 	String ext_dir;
 
-    public XML_Downloader(MainActivity obj) {
+    public Downloader(MainActivity obj) {
     	this.obj = obj;
 		Log.d(MainActivity.TAG, "XML_Downloader::XML_Downloader");
 		File f = obj.getExternalCacheDir();
@@ -44,7 +44,6 @@ public class XML_Downloader extends AsyncTask<Void, Void, XmlPullParser> {
     }
 
     protected XmlPullParser doInBackground(Void... params) {
-    	//String url = urls[0];
 		Log.d(MainActivity.TAG, "refresh");
 		XmlPullParser parser = LoadXML();
 		if(parser == null){
@@ -52,14 +51,6 @@ public class XML_Downloader extends AsyncTask<Void, Void, XmlPullParser> {
 			return parser;
 		}
 		parse_xml(parser);
-		/*
-		try {
-			InputStream in = new java.net.URL("http://s1.radikali.ru/uploads/2017/3/15/166aaaf0259bc951cb552e7b9d6bee3d-full.jpg").openStream();
-			result = BitmapFactory.decodeStream(in);
-		} catch (Exception e) {
-			Log.e(MainActivity.TAG, "Exception::onPostExecute::" + e.toString());
-		}
-		*/
 		return parser;
     }
 
@@ -82,16 +73,6 @@ public class XML_Downloader extends AsyncTask<Void, Void, XmlPullParser> {
 	
 	void parse_xml(XmlPullParser parser){
 		obj.lost_humans.clear();
-    	//XmlPullParser parser = getResources().getXml(R.xml.lost_humans);
-    	/*
-// из файла на SD-карты
-XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-//factory.setNamespaceAware(true); // если используется пространство имён
-XmlPullParser parser = factory.newPullParser();
-File file = new File(Environment.getExternalStorageDirectory()+ "/sd-contacts.xml");
-FileInputStream fis = new FileInputStream(file);
-parser.setInput(new InputStreamReader(fis));    	 
-    	 */
     	
     	// продолжаем, пока не достигнем конца документа
     	try {
@@ -204,7 +185,6 @@ parser.setInput(new InputStreamReader(fis));
 			Log.e(MainActivity.TAG, "SB_len = " + sb.length());
 	        
 	        reader.close();
-			//Log.d("myLogs", sb.toString());
 			return sb.toString();
 		} catch (Exception e) {
 			Log.e(MainActivity.TAG, "Exception::load_url::" + e.toString());
@@ -212,30 +192,18 @@ parser.setInput(new InputStreamReader(fis));
 		}
 		return null;
 	}
-	//Bitmap result;
 	
     protected void onPostExecute(XmlPullParser parser) {
-/*
-    	try {
-			ImageView iv = (ImageView) obj.findViewById(R.id.imageView1);
-			iv.setImageBitmap(result);
-		} catch (Exception e) {
-			Log.e(MainActivity.TAG, "Exception::onPostExecute::" + e.toString());
-		}
-*/
-    	
 		LostHumanItem i = obj.lost_humans.get(0);
 		Log.e(MainActivity.TAG, "onPostExecute::i.photo_file=" + i.photo_file );
 
 		try {
-			FileInputStream is = new  FileInputStream(i.photo_file);
-			Bitmap result = BitmapFactory.decodeStream(is);
-			//Bitmap result = BitmapFactory.decodeFile(i.photo_file);
+			obj.flipper_index = 0;
+			Bitmap result = BitmapFactory.decodeFile(i.photo_file);
 			if(result == null){
 				Log.e(MainActivity.TAG, "onPostExecute::BitmapFactory Bitmap result == null" );
 			}
 			ImageView iv = (ImageView) obj.findViewById(R.id.imageView1);
-			//iv.setImageDrawable(result);
 			iv.setImageBitmap(result);
 			TextView tv = (TextView)  obj.findViewById(R.id.textView2);
 			tv.setText(i.description);
@@ -247,5 +215,3 @@ parser.setInput(new InputStreamReader(fis));
 		
     }
 }
-
-//new XML_Downloader((ImageView) findViewById(R.id.imageview)).execute(ImageUrl);

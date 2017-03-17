@@ -9,22 +9,38 @@
     android:layout_height="fill_parent"
     tools:context="com.lizaalert.MainActivity"
     >
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Последнее обновление 22.22 22:22" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:onClick="refresh"
-        android:text="Обновить" />
-    <ViewFlipper 
-        android:id="@+id/flipper"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />  
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="refresh"
+                android:text="Обновить" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Последнее обновление 22.22 22:22" />
+
+            <ViewFlipper
+                android:id="@+id/flipper"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical" >
+            </ViewFlipper>
+
+        </LinearLayout>
+    </ScrollView>
+  
 </LinearLayout>

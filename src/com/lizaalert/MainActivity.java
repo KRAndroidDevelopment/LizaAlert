@@ -121,34 +121,6 @@ public class MainActivity extends Activity implements OnTouchListener {
     }
 	
 	
-/*
-	String load_xml(){
-		return load_url("http://narod-fl.ru/lost_humans/lost_humans.php");
-	}
-*/
-	public static final String md5(final String s) {
-	    try {
-	        // Create MD5 Hash
-	        MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-	        digest.update(s.getBytes());
-	        byte messageDigest[] = digest.digest();
-
-	        // Create Hex String
-	        StringBuilder hexString = new StringBuilder();
-	        for (byte aMessageDigest : messageDigest) {
-	            String h = Integer.toHexString(0xFF & aMessageDigest);
-	            while (h.length() < 2)
-	                h = "0" + h;
-	            hexString.append(h);
-	        }
-	        return hexString.toString();
-
-	    } catch (Exception e) {
-	    	Log.d(TAG, "Exception::md5::" + e.toString());
-	    	Log.d(TAG, e.getStackTrace().toString());
-	    }
-	    return "";
-	}	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +170,7 @@ public class MainActivity extends Activity implements OnTouchListener {
 		//if(mySharedPreferences.contains(APP_PREFERENCES_LAST_ID)) {
 		//	mySharedPreferences.getString(APP_PREFERENCES_LAST_ID, "");
 		//}	
+		refresh(null);
 	}
 
     @Override
@@ -261,31 +234,10 @@ public class MainActivity extends Activity implements OnTouchListener {
 	}
 
 	public void refresh(View v) {
-		Log.d(TAG, "refresh");
-		new XML_Downloader(this).execute();
-		Log.d(TAG, "/refresh");
+		new Downloader(this).execute();
 /*		
 	    //Intent intent = new Intent(this, AboutActivity.class);
 	    //startActivity(intent);
-		
-		
-		//ImageView bmImage;
-		//Bitmap result;
-		//InputStream in = new java.net.URL(url).openStream()
-		//result = BitmapFactory.decodeStream(in);
-		//bmImage.setImageBitmap(result);
-		XmlPullParser parser = LoadXML();
-		if(parser == null){
-			Log.d(TAG, "parser == null");
-			return;
-		}
-		parse_xml(parser);
-		flipper_index = 0;
-		LostHumanItem i = lost_humans.get(0);
-		Bitmap result = BitmapFactory.decodeFile(i.photo_file);
-		ImageView iv = (ImageView) findViewById(R.id.imageView1);
-		iv.setImageBitmap(result);
-		Log.d(TAG, "/refresh");
 */		
 	}	
 	
